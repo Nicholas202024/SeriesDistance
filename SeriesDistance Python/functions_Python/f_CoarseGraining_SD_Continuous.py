@@ -1,4 +1,10 @@
 import numpy as np
+from f_CalcHydCase import f_CalcHydCase
+from f_TrimSeries import f_TrimSeries
+from f_DefineSegments import f_DefineSegments
+from f_AggregateSegment import f_AggregateSegment
+from f_normalize import f_normalize
+from f_SD import f_SD
 
 def f_CoarseGraining_SD_Continuous(obs, sim, timeseries_splits, weight_nfc, weight_rds, weight_sdt, weight_sdv, error_model):
     """
@@ -76,8 +82,8 @@ def f_CoarseGraining_SD_Continuous(obs, sim, timeseries_splits, weight_nfc, weig
 
         # Apply SD and calculate all three statistics for the initial conditions (no reduction, only equalized # of segments)
         # Apply SD
-        fdist_q, fdist_t, _, e_q_rise, e_t_rise, _, e_q_fall, e_t_fall, _, cons = f_SD(obs, segs_obs, sim, segs_sim, error_model)
-
+        fdist_q, fdist_t, _, e_q_rise, e_t_rise, _, e_q_fall, e_t_fall, _, cons, e_rise_MD, e_fall_MD= f_SD(obs, segs_obs, sim, segs_sim, error_model)
+        
         # Store segments and connectors for initial conditions
         segment_data[0] = (segs_obs, segs_sim)
         connector_data[0] = (cons, 0)  # field stores coarse graining step; 0=initial conditions
@@ -107,7 +113,9 @@ def f_CoarseGraining_SD_Continuous(obs, sim, timeseries_splits, weight_nfc, weig
                 tmp_segs_obs = segs_obs.copy()
                 tmp_hydcase_obs = hydcase_obs.copy()
 
-                tmp_rel_obs = tmp_segs_obs[z_obs].relevance  # save the relevance of the segment before it is deleted
+                print(segs_obs[1])
+
+                tmp_rel_obs = tmp_segs_obs[z_obs]['relevance']  # save the relevance of the segment before it is deleted
                 tmp_segs_obs, tmp_hydcase_obs = f_AggregateSegment(tmp_segs_obs, tmp_hydcase_obs, obs, z_obs)  # erase the specified segment
 
                 for z_sim in range(1, len(segs_sim) - 1):  # loop over all simulated segments, except the first and last
