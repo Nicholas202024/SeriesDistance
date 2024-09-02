@@ -73,8 +73,11 @@ def f_SD(y_obs, segs_obs, y_sim, segs_sim, error_model, printflag=False):
         y_sim_seg = y_sim[x_sim_local_seg]
 
         # Determine the y-values of the connectors in the current segment (based on the local x-locations) with linear interpolation
-        con_y_obs_seg = np.interp(con_x_obs_local_seg, x_obs_local_seg, y_obs_seg)
-        con_y_sim_seg = np.interp(con_x_sim_local_seg, x_sim_local_seg, y_sim_seg)
+        try:
+            con_y_obs_seg = np.interp(con_x_obs_global_seg, x_obs_local_seg, y_obs_seg)
+            con_y_sim_seg = np.interp(con_x_sim_local_seg, x_sim_local_seg, y_sim_seg)
+        except ValueError:
+            continue
 
         # Find out whether the current segment is 'rise' or 'fall'
         if segs_obs[z]['sum_dQ'] > 0:  # rise

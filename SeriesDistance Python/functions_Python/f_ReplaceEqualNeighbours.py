@@ -29,4 +29,4 @@ def f_ReplaceEqualNeighbours(vals):
                 vals[z + count] = vals[z + count - 1] + 0.0001  # raise the value of the previous point by 0.0001
                 count += 1
 
-    return vals, count
+    return vals

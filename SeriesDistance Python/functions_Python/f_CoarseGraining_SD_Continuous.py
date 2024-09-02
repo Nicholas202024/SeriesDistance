@@ -82,7 +82,7 @@ def f_CoarseGraining_SD_Continuous(obs, sim, timeseries_splits, weight_nfc, weig
 
         # Apply SD and calculate all three statistics for the initial conditions (no reduction, only equalized # of segments)
         # Apply SD
-        fdist_q, fdist_t, _, e_q_rise, e_t_rise, _, e_q_fall, e_t_fall, _, cons, e_rise_MD, e_fall_MD= f_SD(obs, segs_obs, sim, segs_sim, error_model)
+        fdist_q, fdist_t, _, e_q_rise, e_t_rise, _, e_q_fall, e_t_fall, _, cons, e_rise_MD, e_fall_MD = f_SD(obs, segs_obs, sim, segs_sim, error_model)
         
         # Store segments and connectors for initial conditions
         segment_data[0] = (segs_obs, segs_sim)
@@ -113,19 +113,29 @@ def f_CoarseGraining_SD_Continuous(obs, sim, timeseries_splits, weight_nfc, weig
                 tmp_segs_obs = segs_obs.copy()
                 tmp_hydcase_obs = hydcase_obs.copy()
 
-                print(segs_obs[1])
-
                 tmp_rel_obs = tmp_segs_obs[z_obs]['relevance']  # save the relevance of the segment before it is deleted
-                tmp_segs_obs, tmp_hydcase_obs = f_AggregateSegment(tmp_segs_obs, tmp_hydcase_obs, obs, z_obs)  # erase the specified segment
+                # original code
+                # tmp_segs_obs, tmp_hydcase_obs = f_AggregateSegment(tmp_segs_obs, tmp_hydcase_obs, obs, z_obs)  # erase the specified segment
+
+                try:
+                    tmp_segs_obs, tmp_hydcase_obs = f_AggregateSegment(tmp_segs_obs, tmp_hydcase_obs, obs, z_obs)  # erase the specified segment
+                except ValueError:
+                    continue
 
                 for z_sim in range(1, len(segs_sim) - 1):  # loop over all simulated segments, except the first and last
                     # For each new loop, start with the best selection of the previous z-round
                     tmp_segs_sim = segs_sim.copy()
                     tmp_hydcase_sim = hydcase_sim.copy()
 
-                    tmp_rel_sim = tmp_segs_sim[z_sim].relevance  # save the relevance of the segment before it is deleted
-                    tmp_segs_sim, tmp_hydcase_sim = f_AggregateSegment(tmp_segs_sim, tmp_hydcase_sim, sim, z_sim)  # erase the specified segment
+                    tmp_rel_sim = tmp_segs_sim[z_sim]['relevance']  # save the relevance of the segment before it is deleted
+                    # original code
+                    # tmp_segs_sim, tmp_hydcase_sim = f_AggregateSegment(tmp_segs_sim, tmp_hydcase_sim, sim, z_sim)  # erase the specified segment
 
+                    try:
+                        tmp_segs_sim, tmp_hydcase_sim = f_AggregateSegment(tmp_segs_sim, tmp_hydcase_sim, sim, z_sim)  # erase the specified segment
+                    except ValueError:
+                        continue
+                            
                     # Compute the objective function
                     tmp_percfalsecase[z_obs, z_sim] = (len(np.where(hydcase_obs_orig != tmp_hydcase_obs)[0]) / len(obs)) + (len(np.where(hydcase_sim_orig != tmp_hydcase_sim)[0]) / len(sim))
                     tmp_rel_del_seg[z_obs, z_sim] = tmp_rel_obs + tmp_rel_sim
@@ -146,7 +156,7 @@ def f_CoarseGraining_SD_Continuous(obs, sim, timeseries_splits, weight_nfc, weig
             for yyy in range(len(tmp_opt)):
                 for zzz in range(len(tmp_opt)):
                     tmp_opt[yyy, zzz] = np.sqrt(norm_tmp_percfalsecase[yyy, zzz]**2 + norm_tmp_rel_del_seg[yyy, zzz]**2 + norm_tmp_mafdist_t[yyy, zzz]**2 + norm_tmp_mafdist_v[yyy, zzz]**2)
-
+            
             # Find the minimum (=best) value
             pos_obs, pos_sim = np.unravel_index(np.argmin(tmp_opt), tmp_opt.shape)
             pos_obs = pos_obs  # reduce to size 1 in case several equally small values were found
@@ -157,7 +167,7 @@ def f_CoarseGraining_SD_Continuous(obs, sim, timeseries_splits, weight_nfc, weig
             segs_sim, hydcase_sim = f_AggregateSegment(segs_sim, hydcase_sim, sim, pos_sim)  # erase the specified segment
 
             # Calculate Series Distance on the optimized level of aggregated segments return SD errors
-            fdist_q, fdist_t, _, e_q_rise, e_t_rise, _, e_q_fall, e_t_fall, _, cons = f_SD(obs, segs_obs, sim, segs_sim, error_model)
+            fdist_q, fdist_t, _, e_q_rise, e_t_rise, _, e_q_fall, e_t_fall, _, cons, e_rise_MD, e_fall_MD = f_SD(obs, segs_obs, sim, segs_sim, error_model)
 
             # Add segment data, connectors and time/ magnitude errors of the best solution for this time series split to that of the entire time series
             segment_data[z + 1] = (segs_obs, segs_sim)
