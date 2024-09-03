@@ -58,8 +58,9 @@ def f_sd(y_obs, segs_obs, y_sim, segs_sim, error_model, printflag=False):
     segs_cons = np.full(num_segs, np.nan)  # variable for the number of connectors assigned to each segment
     sum_rels = sum([seg['relevance'] for seg in segs_obs]) + sum([seg['relevance'] for seg in segs_sim])  # the overall sum of relevance (as relevance is already normalized, should be 1 + 1 = 2)
 
+    # raise Exception('f_SD STOP')
     # the share of connectors for each segment is proportional to its relative relevance
-    segs_cons = np.round(([seg['relevance'] for seg in segs_obs] + [seg['relevance'] for seg in segs_sim]) * totnumcons / sum_rels)
+    segs_cons = np.round(([seg['relevance'] for seg in segs_obs] + [seg['relevance'] for seg in segs_sim]) * int(np.round(totnumcons)) / sum_rels)
 
     # initialize output variables   
 
