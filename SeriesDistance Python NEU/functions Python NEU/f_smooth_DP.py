@@ -23,13 +23,13 @@ def f_smooth_DP(obs, sim, nse_smooth_limit):
     xes = np.arange(1, len(obs) + 1)  # erstelle x-Daten (Zeitpunkte)
     xy = np.column_stack((xes, obs_old))  # bereite Eingabe für f_dp1d vor
 
-    print('\n')
-    print('input data for f_dp1d:')
-    # print("xy: ", xy)
-    print('type xy: ', type(xy))
-    print('dtype xy: ', xy.dtype)
-    print('shape xy: ', xy.shape)
-    print('\n')
+    # print('\n')
+    # print('input data for f_dp1d:')
+    # # print("xy: ", xy)
+    # print('type xy: ', type(xy))
+    # print('dtype xy: ', xy.dtype)
+    # print('shape xy: ', xy.shape)
+    # print('\n')
 
     # füge hinzu: vereinfache obs bis zu einem Punktzahlkriterium
     xy_dp = f_dp1d(xy, -999, sim_tot_extremes)
@@ -37,12 +37,12 @@ def f_smooth_DP(obs, sim, nse_smooth_limit):
     # vereinfache obs bis zu einem NSE-Übereinstimmungsniveau, das durch 'nse_limit_obs' angegeben wird
     # xy_dp = f_dp1d(xy, -999, -999, nse_smooth_limit)
 
-    print('output data for f_dp1d:')
-    # print("xy_dp: ", xy_dp)
-    print('type xy_dp: ', type(xy_dp))
-    print('dtype xy_dp: ', xy_dp.dtype)
-    print('shape xy_dp: ', xy_dp.shape)
-    print('\n')
+    # print('output data for f_dp1d:')
+    # # print("xy_dp: ", xy_dp)
+    # print('type xy_dp: ', type(xy_dp))
+    # print('dtype xy_dp: ', xy_dp.dtype)
+    # print('shape xy_dp: ', xy_dp.shape)
+    # print('\n')
 
     # sample die vereinfachte Linie an den ursprünglichen x-Positionen (Zeitpunkten)
     interp_func = interp1d(xy_dp[:, 0], xy_dp[:, 1], kind='linear')

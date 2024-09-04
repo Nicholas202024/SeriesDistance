@@ -32,28 +32,34 @@ def f_coarse_graining_continuous(obs, sim, timeseries_splits, weight_nfc, weight
         obs_split = obs_org[timeseries_splits[i]:timeseries_splits[i + 1]]
         sim_split = sim_org[timeseries_splits[i]:timeseries_splits[i + 1]]
         
-        print('\n')
-        print('Input for f_trim_series')
-        print('obs_split shape', obs_split.shape)
-        print('obs_split type', type(obs_split))
-        print('sim_split shape', sim_split.shape)
-        print('sim_split type', type(sim_split))
-        print('\n')
+        # print('\n')
+        # print('Input for f_trim_series')
+        # print('obs_split shape', obs_split.shape)
+        # print('obs_split type', type(obs_split))
+        # print('sim_split shape', sim_split.shape)
+        # print('sim_split type', type(sim_split))
+        # print('\n')
 
         # Trim sim and obs to ensure that both start and end with either rise or fall (if necessary)
-        obs, x_obs, sim, x_sim = f_trim_series(obs_split, np.arange(timeseries_splits[i], timeseries_splits[i + 1]), sim_split, np.arange(timeseries_splits[i], timeseries_splits[i + 1]))
+        # original code der Übersetzung
+        # obs, x_obs, sim, x_sim = f_trim_series(obs_split, np.arange(timeseries_splits[i], timeseries_splits[i + 1]), sim_split, np.arange(timeseries_splits[i], timeseries_splits[i + 1]))
 
-        print('Output from f_trim_series/Input for f_define_segments')
-        print('obs type', type(obs))
-        print('obs shape', obs.shape)
-        print('sim type', type(sim))
-        print('sim shape', sim.shape)
-        print('\n')
-        print('x_obs type', type(x_obs))
-        print('x_obs shape', x_obs.shape)
-        print('x_sim type', type(x_sim))
-        print('x_sim shape', x_sim.shape)
-        print('\n')
+        try:
+            obs, x_obs, sim, x_sim = f_trim_series(obs_split, np.arange(timeseries_splits[i], timeseries_splits[i + 1]), sim_split, np.arange(timeseries_splits[i], timeseries_splits[i + 1]))
+        except:
+            continue
+        
+        # print('Output from f_trim_series/Input for f_define_segments')
+        # print('obs type', type(obs))
+        # print('obs shape', obs.shape)
+        # print('sim type', type(sim))
+        # print('sim shape', sim.shape)
+        # print('\n')
+        # print('x_obs type', type(x_obs))
+        # print('x_obs shape', x_obs.shape)
+        # print('x_sim type', type(x_sim))
+        # print('x_sim shape', x_sim.shape)
+        # print('\n')
 
         # Determine the hydrological case for each timestep in the original time series
         hydcase_obs_orig = f_calc_hyd_case(obs)
@@ -66,16 +72,16 @@ def f_coarse_graining_continuous(obs, sim, timeseries_splits, weight_nfc, weight
         segs_obs = f_define_segments(x_obs, obs)
         segs_sim = f_define_segments(x_sim, sim)
 
-        print('Output from f_define_segments')
-        # print('segs_obs', segs_obs)
-        print('segs_obs type', type(segs_obs))
-        print('segs_obs dtype', type(segs_obs[0]))
-        print('segs_obs len', len(segs_obs))
-        # print('segs_sim', segs_sim)
-        print('segs_sim type', type(segs_sim))
-        print('segs_sim dtype', type(segs_sim[0]))
-        print('segs_sim len', len(segs_sim))
-        print('\n')
+        # print('Output from f_define_segments')
+        # # print('segs_obs', segs_obs)
+        # print('segs_obs type', type(segs_obs))
+        # print('segs_obs dtype', type(segs_obs[0]))
+        # print('segs_obs len', len(segs_obs))
+        # # print('segs_sim', segs_sim)
+        # print('segs_sim type', type(segs_sim))
+        # print('segs_sim dtype', type(segs_sim[0]))
+        # print('segs_sim len', len(segs_sim))
+        # print('\n')
 
         # check for differences in the number of segments in obs and sim
         seg_diff = len(segs_obs) - len(segs_sim)
@@ -84,15 +90,15 @@ def f_coarse_graining_continuous(obs, sim, timeseries_splits, weight_nfc, weight
         if seg_diff % 2 != 0:
             raise ValueError('f_SeriesDistance: events must have either both even or both odd # of segments!')
 
-        print('Input for f_aggregate_segment')
-        # print('hydcase_obs', hydcase_obs)
-        print('hydcase_obs type', type(hydcase_obs))
-        print('hydcase shape', hydcase_obs.shape)
-        print('\n')
-        # print('hydcase_sim', hydcase_sim)
-        print('hydcase_sim type', type(hydcase_sim))
-        print('hydcase_sim shape', hydcase_sim.shape)
-        print('\n')
+        # print('Input for f_aggregate_segment')
+        # # print('hydcase_obs', hydcase_obs)
+        # print('hydcase_obs type', type(hydcase_obs))
+        # print('hydcase shape', hydcase_obs.shape)
+        # print('\n')
+        # # print('hydcase_sim', hydcase_sim)
+        # print('hydcase_sim type', type(hydcase_sim))
+        # print('hydcase_sim shape', hydcase_sim.shape)
+        # print('\n')
 
         # equalize the # of segments starting with the least relevant segment in the time series which has more segments
         while seg_diff != 0:
@@ -102,24 +108,24 @@ def f_coarse_graining_continuous(obs, sim, timeseries_splits, weight_nfc, weight
                 segs_sim, hydcase_sim = f_aggregate_segment(segs_sim, hydcase_sim, sim)
             seg_diff = len(segs_obs) - len(segs_sim)
 
-        print('Output from f_aggregate_segment')
-        print('segs_obs type', type(segs_obs))
-        print('segs_obs dtype', type(segs_obs[0]))
-        print('segs_obs len', len(segs_obs))
-        print('\n')
-        # print('hydcase_obs', hydcase_obs)
-        print('hydcase_obs type', type(hydcase_obs))
-        print('hydcase_obs shape', hydcase_obs.shape)
-        print('\n')
+        # print('Output from f_aggregate_segment')
+        # print('segs_obs type', type(segs_obs))
+        # print('segs_obs dtype', type(segs_obs[0]))
+        # print('segs_obs len', len(segs_obs))
+        # print('\n')
+        # # print('hydcase_obs', hydcase_obs)
+        # print('hydcase_obs type', type(hydcase_obs))
+        # print('hydcase_obs shape', hydcase_obs.shape)
+        # print('\n')
     
-        print('segs_sim type', type(segs_sim))
-        print('segs_sim dtype', type(segs_sim[0]))
-        print('segs_sim len', len(segs_sim))
-        print('\n')
-        # print('hydcase_sim', hydcase_sim)
-        print('hydcase_sim type', type(hydcase_sim))
-        print('hydcase_sim shape', hydcase_sim.shape)
-        print('\n')
+        # print('segs_sim type', type(segs_sim))
+        # print('segs_sim dtype', type(segs_sim[0]))
+        # print('segs_sim len', len(segs_sim))
+        # print('\n')
+        # # print('hydcase_sim', hydcase_sim)
+        # print('hydcase_sim type', type(hydcase_sim))
+        # print('hydcase_sim shape', hydcase_sim.shape)
+        # print('\n')
 
         # cleanup
         del seg_diff
@@ -141,17 +147,20 @@ def f_coarse_graining_continuous(obs, sim, timeseries_splits, weight_nfc, weight
         # Apply SD and calculate all three statistics for the initial conditions (no reduction, only equalized # of segments)
         fdist_q, fdist_t, _, e_q_rise, e_t_rise, _, e_q_fall, e_t_fall, _, cons, e_rise_MD, e_fall_MD = f_sd(obs, segs_obs, sim, segs_sim, error_model)
 
-        print('Output from f_sd')
-        print('fdist_q type', type(fdist_q))
-        print('fdist_t type', type(fdist_t))
-        print('e_q_rise type', type(e_q_rise))
-        print('e_t_rise type', type(e_t_rise))
-        print('e_q_fall type', type(e_q_fall))
-        print('e_t_fall type', type(e_t_fall))
-        print('cons type', type(cons))
-        print('e_rise_MD type', type(e_rise_MD))
-        print('e_fall_MD type', type(e_fall_MD))
-        print('\n')
+        # print('Output from f_sd')
+        # print('fdist_q type', type(fdist_q))
+        # print('fdist_t type', type(fdist_t))
+        # print('e_q_rise type', type(e_q_rise))
+        # print('e_t_rise type', type(e_t_rise))
+        # print('e_q_fall type', type(e_q_fall))
+        # print('e_t_fall type', type(e_t_fall))
+        # print('\n')
+        # print('cons', cons)
+        # print('cons type', type(cons))
+        # print('\n')
+        # print('e_rise_MD type', type(e_rise_MD))
+        # print('e_fall_MD type', type(e_fall_MD))
+        # print('\n')
         
         # store segments and connectors for initial conditions
         segment_data[0] = (segs_obs, segs_sim)
@@ -198,10 +207,10 @@ def f_coarse_graining_continuous(obs, sim, timeseries_splits, weight_nfc, weight
                     tmp_mafdist_t[z_obs, z_sim] = np.mean(np.abs(fdist_t))
                     tmp_mafdist_v[z_obs, z_sim] = np.mean(np.abs(fdist_q))
 
-            print('Input for f_normalize')
-            print('tmp_percfalsecase', tmp_percfalsecase)
-            print('tmp_percfalsecase type', type(tmp_percfalsecase))
-            print('\n')
+            # print('Input for f_normalize')
+            # print('tmp_percfalsecase', tmp_percfalsecase)
+            # print('tmp_percfalsecase type', type(tmp_percfalsecase))
+            # print('\n')
 
             # find the best erase-combination for the given reduction step
             norm_tmp_percfalsecase = weight_nfc * f_normalize(tmp_percfalsecase)
@@ -209,19 +218,19 @@ def f_coarse_graining_continuous(obs, sim, timeseries_splits, weight_nfc, weight
             norm_tmp_mafdist_t = weight_sdt * f_normalize(tmp_mafdist_t)
             norm_tmp_mafdist_v = weight_sdv * f_normalize(tmp_mafdist_v)
 
-            print('Output from f_normalize')
-            print('norm_tmp_percfalsecase', norm_tmp_percfalsecase)
-            print('norm_tmp_percfalsecase type', type(norm_tmp_percfalsecase))
-            print('\n')
+            # print('Output from f_normalize')
+            # print('norm_tmp_percfalsecase', norm_tmp_percfalsecase)
+            # print('norm_tmp_percfalsecase type', type(norm_tmp_percfalsecase))
+            # print('\n')
 
             tmp_opt = np.sqrt(norm_tmp_percfalsecase**2 + norm_tmp_rel_del_seg**2 + norm_tmp_mafdist_t**2 + norm_tmp_mafdist_v**2)
 
             pos_obs, pos_sim = np.unravel_index(np.argmin(tmp_opt), tmp_opt.shape)
-            print('pos_obs', pos_obs)
-            print('pos_obs type', type(pos_obs))
-            print('pos_sim', pos_sim)
-            print('pos_sim type', type(pos_sim))
-            print('\n')
+            # print('pos_obs', pos_obs)
+            # print('pos_obs type', type(pos_obs))
+            # print('pos_sim', pos_sim)
+            # print('pos_sim type', type(pos_sim))
+            # print('\n')
 
             # original code der Übersetzung
             # pos_obs = pos_obs[0]
@@ -243,8 +252,9 @@ def f_coarse_graining_continuous(obs, sim, timeseries_splits, weight_nfc, weight
                 segs_obs, hydcase_obs = f_aggregate_segment(segs_obs, hydcase_obs, obs, pos_obs)
                 segs_sim, hydcase_sim = f_aggregate_segment(segs_sim, hydcase_sim, sim, pos_sim)
             except:
-                segs_obs, hydcase_obs = f_aggregate_segment(segs_obs, hydcase_obs, obs)
-                segs_sim, hydcase_sim = f_aggregate_segment(segs_sim, hydcase_sim, sim)
+                # segs_obs, hydcase_obs = f_aggregate_segment(segs_obs, hydcase_obs, obs)
+                # segs_sim, hydcase_sim = f_aggregate_segment(segs_sim, hydcase_sim, sim)
+                continue
 
             # Calculate Series Distance on the optimized level of aggregated segments return SD errors
             fdist_q, fdist_t, _, e_q_rise, e_t_rise, _, e_q_fall, e_t_fall, _, cons, e_rise_MD, e_fall_MD = f_sd(obs, segs_obs, sim, segs_sim, error_model)

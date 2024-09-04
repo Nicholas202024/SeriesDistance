@@ -1,1 +1,6 @@
-f_AggregateSegment funktionier in f_CoarseGraining_SD_Continuous, Zeile 239, nicht
+f_CoarseGraining_SD_Continuous:
+    f_AggregateSegment funktionier in f_CoarseGraining_SD_Continuous, Zeile 239, nicht
+
+f_SD:
+    Zeile 97: int() macht kleine Werte zu 0. Es wird aber für np.linspace() eine ganze Zahl größer 0 benötigten
+

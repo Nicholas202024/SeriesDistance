@@ -50,17 +50,32 @@ def f_sd(y_obs, segs_obs, y_sim, segs_sim, error_model, printflag=False):
 
     # specify connectors
 
+    # print('segs_obs', segs_obs)
     # determine the total number of connectors (average of total length of obs and sim event times the user-specified percentage)
     totnumcons = (len(y_obs) + len(y_sim)) * 0.5
+    # print('totnumcons', totnumcons)
 
     # determine the share of connectors for each segment
     num_segs = len(segs_obs)  # # of segments (could also be len(segs_sim))
+    # print('num_segs', num_segs)
     segs_cons = np.full(num_segs, np.nan)  # variable for the number of connectors assigned to each segment
+    # print('segs_cons 1', segs_cons)
     sum_rels = sum([seg['relevance'] for seg in segs_obs]) + sum([seg['relevance'] for seg in segs_sim])  # the overall sum of relevance (as relevance is already normalized, should be 1 + 1 = 2)
+    # print('sum_rels', sum_rels)
 
-    # raise Exception('f_SD STOP')
     # the share of connectors for each segment is proportional to its relative relevance
-    segs_cons = np.round(([seg['relevance'] for seg in segs_obs] + [seg['relevance'] for seg in segs_sim]) * int(np.round(totnumcons)) / sum_rels)
+    # print('\n')
+    # print('[seg[relevance] for seg in segs_obs]', [seg['relevance'] for seg in segs_obs])
+    # print('[seg[relevance] for seg in segs_sim]', [seg['relevance'] for seg in segs_sim])
+    # print('int(np.round(totnumcons))', int(np.round(totnumcons)))
+    # print('sum_rels', sum_rels)
+    # print('\n')
+
+    # original code der Übersetzung
+    # segs_cons = np.round(([seg['relevance'] for seg in segs_obs] + [seg['relevance'] for seg in segs_sim]) * int(np.round(totnumcons)) / sum_rels)
+    segs_cons = ([seg['relevance'] for seg in segs_obs] + [seg['relevance'] for seg in segs_sim]) * int(np.round(totnumcons)) / sum_rels
+    # print('segs_cons 2', segs_cons)
+    # print('\n')
 
     # initialize output variables   
 
@@ -77,9 +92,32 @@ def f_sd(y_obs, segs_obs, y_sim, segs_sim, error_model, printflag=False):
     for z in range(num_segs):
 
         # determine the GLOBAL x-location (time) of the connectors in the current segment  
-        num = int(segs_cons[z])      
+        
+        # Original code der Übersetzung
+        # num = int(segs_cons[z])
+
+        if segs_cons[z] < 1:
+            num = 1
+        else:
+            num = int(segs_cons[z])
+
+        # print('con_x_obs_global_seg berechnung')
+        # print('num', num)
+        # print('num_segs', num_segs)
+        # print('segs_cons', segs_cons)
+        # print('\n')
+        
+        # print('segs_obs', segs_obs)
+        # print('segs_obs[0]', segs_obs[0])      
+        # print('segs_obs[0][starttime_global]', segs_obs[0]['starttime_global'])
+        # print('segs_obs[0][endtime_global]', segs_obs[0]['endtime_global'])
+        # print('\n')
+
         con_x_obs_global_seg = np.linspace(segs_obs[z]['starttime_global'], segs_obs[z]['endtime_global'], num)
         con_x_sim_global_seg = np.linspace(segs_sim[z]['starttime_global'], segs_sim[z]['endtime_global'], num)  
+
+        # print('con_x_obs_global_seg', con_x_obs_global_seg)
+        # print('\n')
 
         # determine the LOCAL x-location (time) of the connectors in the current segment     
         con_x_obs_local_seg = np.linspace(segs_obs[z]['starttime_local'], segs_obs[z]['endtime_local'], num)
@@ -153,6 +191,13 @@ def f_sd(y_obs, segs_obs, y_sim, segs_sim, error_model, printflag=False):
             e_fall_MD.extend((y_obs[xint] - y_sim[xint]) / ((y_obs[xint] + y_sim[xint]) * 0.5))
 
         # add matching points(x,y) of the segment to overall matching points(for plotting)
+        # print('cons')
+        # print('con_x_obs_global_seg', con_x_obs_global_seg)
+        # print('con_y_obs_seg', con_y_obs_seg)
+        # print('con_x_sim_global_seg', con_x_sim_global_seg)
+        # print('con_y_sim_seg', con_y_sim_seg)
+        # print('\n')
+
         cons['x_match_obs_global'].extend(con_x_obs_global_seg)
         cons['y_match_obs'].extend(con_y_obs_seg)
         cons['x_match_sim_global'].extend(con_x_sim_global_seg)
