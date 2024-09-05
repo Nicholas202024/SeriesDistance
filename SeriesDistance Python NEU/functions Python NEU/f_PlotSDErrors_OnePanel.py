@@ -35,6 +35,6 @@ def f_PlotSDErrors_OnePanel(t_errors, q_errors):
     ax.set_title('entire time series')
     
     # format the figure
-    ax.set_aspect('equal', 'box')
+    # ax.set_aspect('equal', 'box')
     ax.grid(True)
     plt.show()
