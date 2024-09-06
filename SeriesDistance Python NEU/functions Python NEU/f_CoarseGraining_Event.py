@@ -99,6 +99,10 @@ def f_CoarseGraining_Event(obs, obs_eventindex, sim, sim_eventindex, weight_nfc,
     # Cleanup
     del seg_diff, x_sim, x_obs
 
+    # print('check 1')
+    # print('segs_obs:', segs_obs)
+    # print('segs_obs len:', len(segs_obs))
+    # print('\n')
     # Reduction of segments (coarse graining) and calculation of statistics of agreement
 
     # Determine number of reduction steps
@@ -119,10 +123,18 @@ def f_CoarseGraining_Event(obs, obs_eventindex, sim, sim_eventindex, weight_nfc,
     # Plot initial conditions
     if plot_intermedSteps:
         f_PlotCoarseGrainIntSteps(obs, segs_obs, sim, segs_sim, cons, 'initial conditions')
-
+    
+    # print('check 2')
+    # print('num_red:', num_red)
+    # print('segment_data:', segment_data)
+    # print('\n')
+    
     # Store segments and connectors for initial conditions
     segment_data[0] = (segs_obs, segs_sim)
     connector_data[0] = (cons, 0)  # field stores coarse graining step; 0=initial conditions
+    
+    # print('segment_data[0][0]:', segment_data[0][0])
+    # print('\n')
     
     # Calculate objective function inputs for initial conditions
     percfalsecase[0] = (len(np.where(hydcase_obs_orig != hydcase_obs)[0]) / len(obs)) + \
@@ -134,7 +146,10 @@ def f_CoarseGraining_Event(obs, obs_eventindex, sim, sim_eventindex, weight_nfc,
     CoarseGrain_segs = []
     current_segs = np.column_stack((np.ones(len(segs_obs)), [seg['starttime_global'] for seg in segs_obs], [seg['endtime_global'] for seg in segs_obs], [seg['starttime_global'] for seg in segs_sim], [seg['endtime_global'] for seg in segs_sim]))
     CoarseGrain_segs.append(current_segs)
-
+    
+    print('check 3')
+    print('num_red:', num_red)
+    print('\n')
     # Iterative coarse-graining: Jointly aggregate segments in obs and sim, one by one, until the event is represented by two obs and two sim segments
     for z in range(num_red):  # reduce until only 2 or 3 segments are left (2: when started with even # of segments, 3: when started with odd # of segments)
         # Error checking
@@ -153,7 +168,7 @@ def f_CoarseGraining_Event(obs, obs_eventindex, sim, sim_eventindex, weight_nfc,
             tmp_segs_obs = segs_obs.copy()
             tmp_hydcase_obs = hydcase_obs.copy()
 
-            tmp_rel_obs = tmp_segs_obs[z_obs].relevance  # save the relevance of the segment before it is deleted
+            tmp_rel_obs = tmp_segs_obs[z_obs]['relevance']  # save the relevance of the segment before it is deleted
             tmp_segs_obs, tmp_hydcase_obs = f_aggregate_segment(tmp_segs_obs, tmp_hydcase_obs, obs, z_obs)  # erase the specified segment
         
             for z_sim in range(1, len(segs_sim) - 1):  # loop over all simulated segments, except the first and last
@@ -161,7 +176,7 @@ def f_CoarseGraining_Event(obs, obs_eventindex, sim, sim_eventindex, weight_nfc,
                 tmp_segs_sim = segs_sim.copy()
                 tmp_hydcase_sim = hydcase_sim.copy()
             
-                tmp_rel_sim = tmp_segs_sim[z_sim].relevance  # save the relevance of the segment before it is deleted
+                tmp_rel_sim = tmp_segs_sim[z_sim]['relevance']  # save the relevance of the segment before it is deleted
                 tmp_segs_sim, tmp_hydcase_sim = f_aggregate_segment(tmp_segs_sim, tmp_hydcase_sim, sim, z_sim)  # erase the specified segment
            
                 # Compute percentage of false hyd. cases and relative importance
@@ -170,7 +185,7 @@ def f_CoarseGraining_Event(obs, obs_eventindex, sim, sim_eventindex, weight_nfc,
                 tmp_rel_del_seg[z_obs, z_sim] = tmp_rel_obs + tmp_rel_sim
             
                 # Apply SD
-                fdist_q, fdist_t, _, _, _, _, _, _, _, cons = f_sd(obs, tmp_segs_obs, sim, tmp_segs_sim, error_model, 'true')
+                fdist_q, fdist_t, _, _, _, _, _, _, _, cons, _, _ = f_sd(obs, tmp_segs_obs, sim, tmp_segs_sim, error_model, 'true')
                 tmp_mafdist_t[z_obs, z_sim] = np.mean(np.abs(fdist_t))
                 tmp_mafdist_v[z_obs, z_sim] = np.mean(np.abs(fdist_q))
         
@@ -196,11 +211,21 @@ def f_CoarseGraining_Event(obs, obs_eventindex, sim, sim_eventindex, weight_nfc,
         pos_sim = pos_sim  # reduce to size 1 in case several equally small values were found  
 
         # Execute the change on the real events
-        segs_obs, hydcase_obs = f_aggregate_segment(segs_obs, hydcase_obs, obs, pos_obs)  # erase the specified segment
-        segs_sim, hydcase_sim = f_aggregate_segment(segs_sim, hydcase_sim, sim, pos_sim)  # erase the specified segment
+
+        # Original code der Übersetzung
+        # segs_obs, hydcase_obs = f_aggregate_segment(segs_obs, hydcase_obs, obs, pos_obs)  # erase the specified segment
+        # segs_sim, hydcase_sim = f_aggregate_segment(segs_sim, hydcase_sim, sim, pos_sim)  # erase the specified segment
+
+        try:
+            segs_obs, hydcase_obs = f_aggregate_segment(segs_obs, hydcase_obs, obs, pos_obs)  # erase the specified segment
+            segs_sim, hydcase_sim = f_aggregate_segment(segs_sim, hydcase_sim, sim, pos_sim)  # erase the specified segment
+        except:
+            # segs_obs, hydcase_obs = f_aggregate_segment(segs_obs, hydcase_obs, obs)  # erase the specified segment
+            # segs_sim, hydcase_sim = f_aggregate_segment(segs_sim, hydcase_sim, sim)  # erase the specified segment
+            pass
 
         # calculate Series Distance
-        fdist_q, fdist_t, _, _, _, _, _, _, _, cons = f_sd(obs, segs_obs, sim, segs_sim, error_model)  # UE: used to be 'standard'
+        fdist_q, fdist_t, _, _, _, _, _, _, _, cons, _, _ = f_sd(obs, segs_obs, sim, segs_sim, error_model)  # UE: used to be 'standard'
 
         # store all segment data (needed for final SD calculation and plotting of the overall winner)
         segment_data[z + 1] = [segs_obs, segs_sim]
@@ -213,6 +238,11 @@ def f_CoarseGraining_Event(obs, obs_eventindex, sim, sim_eventindex, weight_nfc,
         mafdist_v[z + 1] = np.mean(np.abs(fdist_q))
 
         # Store segment combinations and corresponding coarse graining steps
+
+        print('check type')
+        print('segs_obs:', segs_obs)
+        print('type(segs_obs):', type(segs_obs))
+        print('\n')
         rowindex = (z + 1) * np.ones(len(segs_obs.starttime_global))
         current_segs = np.column_stack((rowindex, segs_obs['starttime_global'], segs_obs['endtime_global'], segs_sim['starttime_global'], segs_sim['endtime_global']))
         CoarseGrain_segs = np.vstack((CoarseGrain_segs, current_segs))
@@ -240,5 +270,20 @@ def f_CoarseGraining_Event(obs, obs_eventindex, sim, sim_eventindex, weight_nfc,
         segs_obs_opt = np.array(segment_data[opt_step][0])
         segs_sim_opt = np.array(segment_data[opt_step][1])
         cons = np.array(connector_data[opt_step][0])
+
+    # Code zu Übersetzung hinzugefügt
+    if num_red == 0:
+        segs_obs_opt = np.array(segment_data[0][0])
+        segs_sim_opt = np.array(segment_data[0][1])
+
+        ObFuncVal = np.empty(0)
+
+        opt_step = None
+
+    print('check 4')
+    print('num_red:', num_red)
+    # print('segs_obs_opt:', segs_obs_opt)
+    # print('segs_sim_opt:', segs_sim_opt)
+    # print('\n')
 
     return segs_obs_opt, segs_sim_opt, cons, connector_data, ObFuncVal, opt_step, CoarseGrain_segs, seg_raw_statistics

@@ -4,3 +4,6 @@ f_CoarseGraining_SD_Continuous:
 f_SD:
     Zeile 97: int() macht kleine Werte zu 0. Es wird aber für np.linspace() eine ganze Zahl größer 0 benötigten
 
+f_CoarseGraining_Event: 
+    num_red ist 0 und code wird dadurch teilweise nicht ausgeführt
+
