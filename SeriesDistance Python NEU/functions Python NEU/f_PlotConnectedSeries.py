@@ -14,9 +14,16 @@ def f_PlotConnectedSeries(obs, segs_obs, sim, segs_sim, connectors, showEventInd
         # Original code der Übersetzung
         # u = connectors[0]['x_match_sim_global'] - connectors[0]['x_match_obs_global']
         # v = connectors[0]['y_match_sim'] - connectors[0]['y_match_obs']
-
-        u = [a - b for a, b in zip(connectors[0]['x_match_sim_global'], connectors[0]['x_match_obs_global'])]
-        v = [a - b for a, b in zip(connectors[0]['y_match_sim'], connectors[0]['y_match_obs'])]
+        
+        # print('connectors:', connectors)
+        # print('\n')
+        
+        try:
+            u = [a - b for a, b in zip(connectors[0]['x_match_sim_global'], connectors[0]['x_match_obs_global'])]
+            v = [a - b for a, b in zip(connectors[0]['y_match_sim'], connectors[0]['y_match_obs'])]
+        except:
+            u = [a - b for a, b in zip(connectors['x_match_sim_global'], connectors['x_match_obs_global'])]
+            v = [a - b for a, b in zip(connectors['y_match_sim'], connectors['y_match_obs'])]
 
     fig, ax = plt.subplots()
     # ax.hold(True)
@@ -28,7 +35,10 @@ def f_PlotConnectedSeries(obs, segs_obs, sim, segs_sim, connectors, showEventInd
     # Plot Feature Distance lines
     # Distance vectors between matching points obs/sim
     if show_connectors:
-        ax.quiver(connectors[0]['x_match_obs_global'], connectors[0]['y_match_obs'], u, v, angles='xy', scale_units='xy', scale=1, color=[0.6, 0.6, 0.6], headlength=0, headwidth=0)
+        try:
+            ax.quiver(connectors[0]['x_match_obs_global'], connectors[0]['y_match_obs'], u, v, angles='xy', scale_units='xy', scale=1, color=[0.6, 0.6, 0.6], headlength=0, headwidth=0)
+        except:
+            ax.quiver(connectors['x_match_obs_global'], connectors['y_match_obs'], u, v, angles='xy', scale_units='xy', scale=1, color=[0.6, 0.6, 0.6], headlength=0, headwidth=0)
 
     # Plot the connected segments in unique color
     num_segs = len(segs_obs)

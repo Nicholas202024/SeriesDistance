@@ -147,9 +147,18 @@ def f_CoarseGraining_Event(obs, obs_eventindex, sim, sim_eventindex, weight_nfc,
     current_segs = np.column_stack((np.ones(len(segs_obs)), [seg['starttime_global'] for seg in segs_obs], [seg['endtime_global'] for seg in segs_obs], [seg['starttime_global'] for seg in segs_sim], [seg['endtime_global'] for seg in segs_sim]))
     CoarseGrain_segs.append(current_segs)
     
-    print('check 3')
-    print('num_red:', num_red)
-    print('\n')
+    # print('Check store segment')
+    # print('current_segs:', current_segs)
+    # print('current_segs type:', type(current_segs))
+    # print('\n')
+    # print('CoarseGrain_segs:', CoarseGrain_segs)
+    # print('CoarseGrain_segs type:', type(CoarseGrain_segs))
+    # print('\n')
+
+    # print('check 3')
+    # print('num_red:', num_red)
+    # print('\n')
+
     # Iterative coarse-graining: Jointly aggregate segments in obs and sim, one by one, until the event is represented by two obs and two sim segments
     for z in range(num_red):  # reduce until only 2 or 3 segments are left (2: when started with even # of segments, 3: when started with odd # of segments)
         # Error checking
@@ -239,14 +248,38 @@ def f_CoarseGraining_Event(obs, obs_eventindex, sim, sim_eventindex, weight_nfc,
 
         # Store segment combinations and corresponding coarse graining steps
 
-        print('check type')
-        print('segs_obs:', segs_obs)
-        print('type(segs_obs):', type(segs_obs))
-        print('\n')
-        rowindex = (z + 1) * np.ones(len(segs_obs.starttime_global))
-        current_segs = np.column_stack((rowindex, segs_obs['starttime_global'], segs_obs['endtime_global'], segs_sim['starttime_global'], segs_sim['endtime_global']))
-        CoarseGrain_segs = np.vstack((CoarseGrain_segs, current_segs))
+        # print('check type')
+        # print('segs_obs:', segs_obs)
+        # print('type(segs_obs):', type(segs_obs))
+        # print('type(segs_obs[0]):', type(segs_obs[0]))
+        # print('len(segs_obs):', len(segs_obs))
+        # print('\n')
 
+        # Original code der Übersetzung
+        # rowindex = (z + 1) * np.ones(len(segs_obs['starttime_global']))
+        # current_segs = np.column_stack((rowindex, segs_obs['starttime_global'], segs_obs['endtime_global'], segs_sim['starttime_global'], segs_sim['endtime_global']))
+        # CoarseGrain_segs = np.vstack((CoarseGrain_segs, current_segs))
+
+        rowindex = (z + 2) * np.ones(len(segs_obs))
+        current_segs = np.column_stack((rowindex, [seg['starttime_global'] for seg in segs_obs], [seg['endtime_global'] for seg in segs_obs], [seg['starttime_global'] for seg in segs_sim], [seg['endtime_global'] for seg in segs_sim]))
+        
+        # print('rowindex:', rowindex)
+        # print('rowindex type:', type(rowindex))
+        # print('rowindex shape:', rowindex.shape)
+        # print('\n')
+        # print('current_segs:', current_segs)
+        # print('current_segs type:', type(current_segs))
+        # print('current_segs shape:', current_segs.shape)
+        # print('\n')
+
+        CoarseGrain_segs.append(current_segs)
+
+        # print('CoarseGrain_segs:', CoarseGrain_segs)
+        # print('CoarseGrain_segs type:', type(CoarseGrain_segs))
+        # print('CoarseGrain_segs shape:', len(CoarseGrain_segs))
+        # print('\n')
+        
+        # raise Exception('STOP COARSE GRAINING')
         # plot intermediate coarse graining steps
         if plot_intermedSteps:
             f_PlotCoarseGrainIntSteps(obs, segs_obs, sim, segs_sim, cons, f'coarse graining step: {z}')
@@ -280,8 +313,8 @@ def f_CoarseGraining_Event(obs, obs_eventindex, sim, sim_eventindex, weight_nfc,
 
         opt_step = None
 
-    print('check 4')
-    print('num_red:', num_red)
+    # print('check 4')
+    # print('num_red:', num_red)
     # print('segs_obs_opt:', segs_obs_opt)
     # print('segs_sim_opt:', segs_sim_opt)
     # print('\n')
