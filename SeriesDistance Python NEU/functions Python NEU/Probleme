@@ -7,3 +7,9 @@ f_SD:
 f_CoarseGraining_Event: 
     num_red ist 0 und code wird dadurch teilweise nicht ausgeführt
 
+f_ReplaceEqualNeighbours:
+    Werte sind zu hoch 
+
+matlab desktop:
+    probieren, ob ich den matlabcode online ausführen kann
+
