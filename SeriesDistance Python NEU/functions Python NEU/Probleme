@@ -13,3 +13,12 @@ f_ReplaceEqualNeighbours:
 matlab desktop:
     probieren, ob ich den matlabcode online ausführen kann
 
+
+
+
+
+Vergleich mit Output aus Matlab:
+
+f_smooth_DP:
+    obs Zeitreihen stimmen nicht überein
+    

@@ -21,6 +21,7 @@ def f_smooth_DP(obs, sim, nse_smooth_limit):
 
     obs_old = obs.copy()  # behalte die ursprüngliche Zeitreihe
     xes = np.arange(1, len(obs) + 1)  # erstelle x-Daten (Zeitpunkte)
+    
     xy = np.column_stack((xes, obs_old))  # bereite Eingabe für f_dp1d vor
 
     # print('\n')
@@ -33,6 +34,7 @@ def f_smooth_DP(obs, sim, nse_smooth_limit):
 
     # füge hinzu: vereinfache obs bis zu einem Punktzahlkriterium
     xy_dp = f_dp1d(xy, -999, sim_tot_extremes)
+
     # frühere Version:
     # vereinfache obs bis zu einem NSE-Übereinstimmungsniveau, das durch 'nse_limit_obs' angegeben wird
     # xy_dp = f_dp1d(xy, -999, -999, nse_smooth_limit)
