@@ -32,6 +32,9 @@ def f_coarse_graining_continuous(obs, sim, timeseries_splits, weight_nfc, weight
         obs_split = obs_org[timeseries_splits[i]:timeseries_splits[i + 1]]
         sim_split = sim_org[timeseries_splits[i]:timeseries_splits[i + 1]]
         
+        print('obs_split', obs_split)
+        raise Exception('FORCED STOP coarsegraining')
+
         # print('\n')
         # print('Input for f_trim_series')
         # print('obs_split shape', obs_split.shape)

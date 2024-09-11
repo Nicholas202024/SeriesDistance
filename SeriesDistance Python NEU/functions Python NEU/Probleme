@@ -20,5 +20,6 @@ matlab desktop:
 Vergleich mit Output aus Matlab:
 
 f_smooth_DP:
-    obs Zeitreihen stimmen nicht überein
+    vor f_dp1d stimmt alles
+    danach nicht mehr
     

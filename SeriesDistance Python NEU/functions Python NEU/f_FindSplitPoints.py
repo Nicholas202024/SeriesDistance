@@ -79,6 +79,7 @@ def f_FindSplitPoints(obs, sim, split_frequency):
                 timeseries_splits.append(best_split_time)
 
     # add the end of the time series (mandatory)
+    # Original Code der Übersetzung
     timeseries_splits.append(len(obs) - 1)
 
     return timeseries_splits

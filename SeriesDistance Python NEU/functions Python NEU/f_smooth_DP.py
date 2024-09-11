@@ -5,9 +5,19 @@ from f_dp1d import f_dp1d
 def f_smooth_DP(obs, sim, nse_smooth_limit):
     # Berechne Statistiken, um die ursprüngliche und geglättete Zeitreihe zu vergleichen
     # Anzahl der Extremwerte
-    local_mins = len(np.where(np.diff(np.sign(np.diff(obs))) == 2)[0]) + 1  # Anzahl der positiven Vorzeichenwechsel in der zeitlichen Ableitung von obs (lokale Maxima)
-    local_maxs = len(np.where(np.diff(np.sign(np.diff(obs))) == -2)[0]) + 1  # Anzahl der negativen Vorzeichenwechsel in der zeitlichen Ableitung von obs (lokale Minima)
+
+    # Original code der Übersetzung:
+    # local_mins = len(np.where(np.diff(np.sign(np.diff(obs))) == 2)[0]) + 1  # Anzahl der positiven Vorzeichenwechsel in der zeitlichen Ableitung von obs (lokale Maxima)
+    # local_maxs = len(np.where(np.diff(np.sign(np.diff(obs))) == -2)[0]) + 1  # Anzahl der negativen Vorzeichenwechsel in der zeitlichen Ableitung von obs (lokale Minima)
+    
+    local_mins = len(np.where(np.diff(np.sign(np.diff(obs))) == 2)[0])
+    local_maxs = len(np.where(np.diff(np.sign(np.diff(obs))) == -2)[0])
+
     obs_tot_extremes = local_mins + local_maxs
+
+    # print('local_mins: ', local_mins)
+    # print('local_maxs: ', local_maxs)
+    # print('obs_tot_extremes: ', obs_tot_extremes)
 
     local_mins = len(np.where(np.diff(np.sign(np.diff(sim))) == 2)[0]) + 1  # dasselbe für sim
     local_maxs = len(np.where(np.diff(np.sign(np.diff(sim))) == -2)[0]) + 1  # dasselbe für sim
@@ -16,6 +26,8 @@ def f_smooth_DP(obs, sim, nse_smooth_limit):
     SumAbsSIM = np.sum(np.abs(np.diff(sim)))
     SumAbsOBS = np.sum(np.abs(np.diff(obs)))
 
+    # print('SumAbsOBS: ', SumAbsOBS)
+
     print(f'orginal obs: var: {np.var(obs)}, # extremes: {obs_tot_extremes}, diff(obs)={SumAbsOBS}')
     print(f'orginal sim: var: {np.var(sim)}, # extremes: {sim_tot_extremes}, diff(sim)={SumAbsSIM}')
 
@@ -23,6 +35,9 @@ def f_smooth_DP(obs, sim, nse_smooth_limit):
     xes = np.arange(1, len(obs) + 1)  # erstelle x-Daten (Zeitpunkte)
     
     xy = np.column_stack((xes, obs_old))  # bereite Eingabe für f_dp1d vor
+
+    # print('xes: ', xes)
+    # print('xy: ', xy[-1][1])
 
     # print('\n')
     # print('input data for f_dp1d:')
@@ -34,6 +49,8 @@ def f_smooth_DP(obs, sim, nse_smooth_limit):
 
     # füge hinzu: vereinfache obs bis zu einem Punktzahlkriterium
     xy_dp = f_dp1d(xy, -999, sim_tot_extremes)
+
+    # print('xy_dp: ', xy_dp[99:109])
 
     # frühere Version:
     # vereinfache obs bis zu einem NSE-Übereinstimmungsniveau, das durch 'nse_limit_obs' angegeben wird
